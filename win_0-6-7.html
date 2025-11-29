@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="https://cdn-icons-png.freepik.com/256/15861/15861346.png?ga=GA1.1.618207220.1749489824&semt=ais_hybrid" type="image/x-icon">
+<title>Windows 0.6.7</title>
+<style>
+  
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(45deg, blue, green, yellow, orange, red);
+    overflow: hidden;
+    user-select: none;
+  }
+  #desktop {
+    position: relative;
+    width: 100%; height: 100%;
+    background: linear-gradient(45deg, blue, green, yellow, orange, red);
+  }
+  #taskbar {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 4%;
+    background: rgba(40,40,40,0.85);
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    box-shadow: 0 0px 0px rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+  }
+  #taskbar button {
+    display: flex;
+      position: center;
+    background: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.3% 12px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    justify-content: center;
+    margin: 0.2%;
+  }
+
+  .wo {
+    display: block;
+    position: absolute;
+    background: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+    #WinMenu button {
+    scale: 0.99;
+    background: rgba(45,45,45);
+    color: yellow;
+    border: none;
+    border-radius: 0px;
+    padding: 6px 12px;
+    width: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.5;
+    gap: 30px;
+  }
+  #options button {
+    scale: 0.9;
+    background: orangee;
+    color: yellow;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 100px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #WinMenu button:hover {
+    scale: 0.99;
+    background: rgba(45,45,45);
+    color: orange;
+    border: none;
+    border-radius: 0px;
+    padding: 6px 12px;
+    width: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.5;
+    gap: 30px;
+  }
+  .window {
+    position: absolute;
+    background: black;
+    border-radius: 0px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    min-width: 280px;
+    min-height: 180px;
+    border: 1px solid blue;
+    overflow: hidden;
+    resize: both;
+    user-select: text;
+    z-index: 1000;
+  }
+    .window2 {
+    position: absolute;
+    background: black;
+    border-radius: 0px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    min-width: 35px;
+    min-height: 15px;
+    border: 1px solid blue;
+    overflow: hidden;
+    resize: both;
+    user-select: text;
+    z-index: 1000;
+  }
+  .window-header {
+    background: linear-gradient(to right, rgba(40,40,40,0.95), rgba(40,40,40,0.74));
+    color: white;
+    padding: 4px 12px;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    user-select: none;
+  }
+  .window-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: black;
+    font-size: 14px;
+  }
+  .close-btn {
+    background: black;
+    border: none;
+    border-radius: 3%;
+    width: 26px; height: 25px;
+    font-weight: bold;
+    color: red;
+    cursor: pointer;
+    user-select: none;
+    font-size: 20px;
+  }
+  .window-btn {
+    background: green;
+    border: none;
+    border-radius: 3%;
+    width: 26px; height: 25px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.788);
+    cursor: pointer;
+    user-select: none;
+    font-size: 20px;
+  }
+  .file-item {
+    background: green;
+    margin: 4px 0;
+    padding: 6px;
+    border-radius: 5px;
+    cursor: grab;
+    user-select: none;
+    width: 100%;
+  }
+  .file-item:hover {
+    background: yellow;
+  }
+  .action {
+    margin: 4px 6px 4px 0;
+    padding: 6px 12px;
+    background: #0078d7;
+    color: white;
+    border: none;
+    min-width: 100%;
+    min-height: 20%;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .desktop-icon {
+    position: absolute;
+    background: green;
+    padding: 6px 10px;
+    border: 1px solid yellow;
+    border-radius: 6px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    z-index: 2;
+  }
+  
+  .WinMenu {
+    position: absolute;
+    background: rgba(40,40,40,0.85);
+    border: 1px solid rgba(40,40,40,0.95);
+    border-radius: 0px;
+    user-select: none;
+    width: 22%;
+    height: 26%;
+    z-index: 1000;
+    top: 70%;
+  }
+  .delete {
+    position: absolute;
+    background: red;
+    border: 5% solid black;
+    border-radius: 10%;
+    user-select: none;
+    width: 3%;
+    height: 6%;
+    z-index: 1;
+    top: 0%;
+    left: 0%;
+  }
+
+  #contextMenu {
+  display:none; 
+  position:absolute; 
+  z-index:9999;
+  background:#222; 
+  border:1px solid #555; 
+  border-radius:5px; 
+  padding:5px;
+  min-width: 140px; 
+  font-family: 'Segoe UI'; 
+  color:white;
+  user-select: none;
+}
+
+.context-section {
+  padding: 6px 8px;
+  color: #aaa;
+  font-weight: bold;
+  border-bottom: 1px solid #555;
+  cursor: default;
+}
+
+.context-button {
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.context-button:hover {
+  background: #444;
+}
+
+#contextMenu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 0px;
+    padding: 5px;
+    min-width: 140px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    display: none;
+    z-index: 9999;
+    user-select: none;
+  }
+  #contextMenu > div {
+    padding: 3px 12px;
+    cursor: pointer;
+    position: relative;
+  }
+  #contextMenu > div:hover {
+    background: #444;
+  }
+  .submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 0px;
+    padding: 5px;
+    min-width: 160px;
+    display: none;
+    white-space: nowrap;
+    z-index: 9999;
+  }
+  .submenu button {
+    padding: 6px 8px;
+    cursor: pointer;
+  }
+  .submenu button:hover {
+    background: #444;
+  }
+  .has-submenu:hover > .submenu {
+    display: block;
+  }
+  .has-submenu::after {
+    content: "▶";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #ccc;
+    pointer-events: none;
+  }
+  
+
+
+
+#contextMenu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 0px;
+    padding: 5px;
+    min-width: 140px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    display: none;
+    z-index: 9999;
+    user-select: none;
+  }
+
+  /* Общие стили для всех пунктов меню */
+  .menu-item {
+    padding: 3px 12px;
+    cursor: pointer;
+    position: relative;
+    border-radius: 0px;
+  }
+
+  /* Наведение работает в любом меню: и основном, и подменю */
+  .menu-item:hover {
+    background: #444;
+  }
+
+  .submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 0px;
+    padding: 5px;
+    min-width: 130px;
+    display: none;
+    white-space: nowrap;
+    z-index: 10000;
+  }
+
+  .has-submenu:hover > .submenu {
+    display: block;
+  }
+
+  .has-submenu::after {
+    content: "▶";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #ccc;
+    pointer-events: none;
+  }
+  .hidden {
+      display: none;
+    }
+    #menu {
+      background: rgba(146, 88, 88, 0.781);
+      position: absolute;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0%;
+      left: 0%;
+      position: absolute;
+    }
+    #menu button {
+    position: absolute;
+    background: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    width: 10%;
+    height: 4%;
+    top: 46%;
+    left: 45%;
+    scale: 6;
+    }
+    #menu button:hover {
+    position: absolute;
+    background: #006cc4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    width: 10%;
+    height: 4%;
+    top: 46%;
+    left: 45%;
+    scale: 6;
+    }
+    .bb-btn {
+  float: right;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+</style>
+</head>
+<body>
+
+  <div id="desktop">
+    <div class="delete" id="delete">
+      
+    </div>
+      <div class="WinMenu" id="WinMenu">
+          <button onclick="options();
+          WinMenu1();">
+              Options
+              
+          </button>
+          <button onclick="appStore();
+          WinMenu1();">
+              🛒 app store
+              
+          </button>
+      </div>
+  </div>
+  <div id="taskbar" class="taskbar">
+      
+      <button onclick="WinMenu1()" style="position: absolute;
+      left: 0.2%;
+      display: block;" class="wo">#</button>
+      
+    <button onclick="openExplorerPlus([])">📁</button>
+    <button onclick="openCalculator()">🧮</button>
+    <button onclick="openClicker()">🖱️</button>
+
+    <div id="clock" style="
+  position: absolute;
+  right: 10px;
+  color: white;
+  font-size: 14px;
+  text-align: right;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.2;
+">
+  00:00:00<br>00.00.0000
+</div>
+
+  </div>
+
+<div id="contextMenu"></div>
+
+<div class="menu" id="menu">
+  <button onclick="menu()">open</button>
+</div>
+
+  <script>
+
+    menu();
+
+const DataMenu = [
+    { type: "button", label: "1", action: () => alert("1") },
+    { type: "button", label: "2", action: () => alert("2") },
+    { 
+      type: "section", 
+      label: "3",
+      items: [
+        { type: "button", label: "4", action: () => alert("4") },
+        { type: "button", label: "5", action: () => alert("5") },
+        { 
+      type: "section", 
+      label: "6",
+      items: [
+        { type: "button", label: "7", action: () => alert("7") },
+        { type: "button", label: "8", action: () => alert("8") }
+      ]
+    }
+      ]
+    },
+    { type: "button", label: "Options", action: () => alert("Opt") }
+  ];
+
+
+
+
+
+
+  let startup = localStorage.getItem("startup") || "";
+
+startup = startup + "\n";
+localStorage.setItem("startup", startup);
+
+eval(startup);
+
+  
+    const contextMenu = document.getElementById('contextMenu');
+    const desktop = document.getElementById('desktop');
+    const WinMenu = document.getElementById('WinMenu');
+
+    let fs = JSON.parse(localStorage.getItem('vfs_')) || { name: 'root', type: 'folder', children: {} };
+    let highestZ = 10;
+
+    let app = parseInt(localStorage.getItem("app") || "");
+
+
+    function saveFS() {
+      localStorage.setItem('vfs_', JSON.stringify(fs));
+    }
+
+    function getFolder(path) {
+      let current = fs;
+      for (let p of path) {
+        if (!current.children[p]) return null;
+        current = current.children[p];
+      }
+      return current;
+    }
+// openExplorer();
+
+
+    function openExplorer(path = []) {
+      const container = document.createElement('div');
+      const cwd = getFolder(path);
+      if (!cwd) return alert('Папка не найдена');
+
+      const controls = document.createElement('div');
+      ['js', 'bat', 'vbs', 'exe', 'txt'].forEach(ext => {
+        const btn = document.createElement('button');
+        btn.className = 'action';
+        btn.textContent = '.' + ext;
+        btn.onclick = () => {
+          const name = prompt('Имя');
+          if (!name) return;
+          const fullName = name;
+          if (cwd.children[fullName]) {
+            alert('Файл с таким именем уже существует!');
+            return;
+          }
+          cwd.children[fullName] = { name: fullName, type: 'file', ext, content: '' };
+          saveFS();
+          refresh();
+        };
+        controls.appendChild(btn);
+      });
+
+      const folderBtn = document.createElement('button');
+      folderBtn.className = 'action';
+      folderBtn.textContent = '📁';
+      folderBtn.onclick = () => {
+        const name = prompt('Имя папки:');
+        if (!name) return;
+        if (cwd.children[name]) {
+          alert('Папка с таким именем уже существует!');
+          return;
+        }
+        cwd.children[name] = { name, type: 'folder', children: {} };
+        saveFS();
+        refresh();
+      };
+      controls.appendChild(folderBtn);
+      container.appendChild(controls);
+
+      const list = document.createElement('div');
+      container.appendChild(list);
+
+      function refresh() {
+        list.innerHTML = '';
+        for (let key in cwd.children) {
+          const item = cwd.children[key];
+          const el = document.createElement('div');
+          el.className = 'file-item';
+          el.textContent = item.name;
+          el.draggable = true;
+          el.ondragstart = (e) => {
+            e.dataTransfer.setData('text/plain', JSON.stringify({ path, name: key }));
+          };
+          el.onclick = () => {
+            if (item.type === 'folder') openExplorer([...path, key]);
+            else openFile(item, cwd);
+          };
+          list.appendChild(el);
+        }
+      }
+      refresh();
+      makeWindow('Проводник', container);
+    }
+
+    function openFile(file, folder) {
+      if (file.ext === 'exe') {
+            let code = decodeURIComponent(escape(atob(file.content)));
+            eval(code);
+          } else {
+      const div = document.createElement('div');
+      const ta = document.createElement('textarea');
+      ta.value = file.content;
+      ta.style.width = '99%';
+      ta.style.height = '150px';
+      div.style.width = '350px';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'action';
+      saveBtn.textContent = '💾 Сохранить';
+      saveBtn.onclick = () => {
+        file.content = ta.value;
+        saveFS();
+      };
+
+      const runBtn = document.createElement('button');
+      runBtn.className = 'action';
+      runBtn.textContent = '▶ Запустить';
+      runBtn.onclick = () => {
+        try {
+          if (file.ext === 'js') {
+            const globalEval = new Function(file.content);
+            globalEval();
+          } else if (file.ext === 'bat') {
+            simulateBat(file.content, folder);
+          } else if (file.ext === 'vbs') {
+            simulateBat(file.content)
+            alert('VBS\n' + file.content, fold);
+          } else if (file.ext === 'exe') {
+            let code = decodeURIComponent(escape(atob(file.content)));
+            eval(code);
+          } else {
+            alert('Невозможно запустить файл с расширением .' + file.ext);
+          }
+        } catch(e) {
+          alert('Ошибка: ' + e.message);
+        }
+      };
+
+      div.appendChild(ta);
+      div.appendChild(saveBtn);
+      div.appendChild(runBtn);
+      makeWindow(file.name, div);
+    }
+    }
+
+    function simulateBat(content, cwd) {
+      const lines = content.split(/\r?\n/);
+      for (let line of lines) {
+        const cmd = line.trim();
+        if (cmd.length === 0) continue;
+
+        if (cmd.startsWith('CreateFolder ')) {
+          const name = cmd.substring(6).trim();
+          if (cwd.children[name]) {
+            alert(`Папка "${name}" уже существует.`);
+          } else {
+            cwd.children[name] = { name, type: 'folder', children: {} };
+          }
+        } else if (cmd.startsWith('CreateFile ')) {
+          const name = cmd.substring(6).trim();
+          if (cwd.children[name]) {
+            alert(`Файл "${name}" уже существует.`);
+          } else {
+            cwd.children[name] = { name, type: 'file', ext: 'txt', content: '' };
+          }
+        } else if (cmd.startsWith('echo ')) {
+          const echoMatch = cmd.match(/^echo\s+(.*?)\s*>\s*(.+)$/);
+          if (echoMatch) {
+            const [, text, filename] = echoMatch;
+            cwd.children[filename] = { name: filename, type: 'file', ext: filename.split('.').pop() || 'txt', content: text };
+          } else {
+            alert(cmd.substring(5));
+          }
+        } else {
+          alert('Неизвестная команда в bat: ' + cmd);
+        }
+      }
+      saveFS();
+      // alert('BAT скрипт выполнен');
+    }
+    
+    function makeWindow(title, content) {
+      const win = document.createElement('div');
+      win.className = 'window';
+      win.style.left = Math.random() * 80 + '%';
+      win.style.top = Math.random() * 50 + '%';
+      win.style.zIndex = ++highestZ;
+
+      const header = document.createElement('div');
+      header.className = 'window-header';
+      header.textContent = title;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'close-btn';
+      closeBtn.textContent = '×';
+      closeBtn.onclick = () => win.remove();
+      header.onclick = () => winind(this);
+      
+      win.addEventListener("mousedown", () => {
+        document.querySelectorAll('.window').forEach(w => w.classList.remove('active-window'));
+        win.style.zIndex = currentZ;
+        win.classList.add('active-window');
+    });
+
+      header.appendChild(closeBtn);
+      win.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'window-body';
+      body.appendChild(content);
+      win.appendChild(body);
+
+      desktop.appendChild(win);
+
+      enableDrag(win, header);
+    }
+
+    function enableDrag(element, handle) {
+      let offsetX = 0, offsetY = 0;
+      let dragging = false;
+
+      handle.addEventListener('mousedown', e => {
+        dragging = true;
+        offsetX = e.clientX - element.offsetLeft;
+        offsetY = e.clientY - element.offsetTop;
+        element.style.zIndex = ++highestZ;
+        e.preventDefault();
+      });
+
+      document.addEventListener('mouseup', e => {
+        dragging = false;
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (dragging) {
+          let x = e.clientX - offsetX;
+          let y = e.clientY - offsetY;
+          // Ограничение по экрану
+          x = Math.max(0, Math.min(window.innerWidth - element.offsetWidth, x));
+          y = Math.max(0, Math.min(window.innerHeight - element.offsetHeight - 48, y));
+
+
+          
+          element.style.left = x + 'px';
+          element.style.top = y + 'px';
+          element.style.zIndex = ++highestZ;
+        }
+      });
+    }
+
+    desktop.addEventListener('dragover', e => e.preventDefault());
+    desktop.addEventListener('drop', e => {
+      e.preventDefault();
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const folder = getFolder(data.path);
+        if (!folder) return;
+        const item = folder.children[data.name];
+        if (!item) return;
+        createDesktopIcon(item, e.pageX, e.pageY);
+      } catch {}
+    });
+
+    function createDesktopIcon(item, x, y) {
+      const icon = document.createElement('div');
+      icon.className = 'desktop-icon';
+      const snapped = snapToGrid(x, y, 80); // 80 — размер "ячейки"
+      icon.style.left = snapped.x + 'px';
+      icon.style.top = snapped.y + 'px';
+      icon.textContent = item.name;
+      icon.addEventListener('dblclick', () => openFile(item, fs));
+      desktop.appendChild(icon);
+      enableDrag2(icon, icon);
+    }
+
+function enableDrag(win, handle) {
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+
+  const startDrag = (x, y) => {
+    isDragging = true;
+    offsetX = x - win.offsetLeft;
+    offsetY = y - win.offsetTop;
+  };
+
+  const doDrag = (x, y) => {
+    if (!isDragging) return;
+
+    let newX = x - offsetX;
+    let newY = y - offsetY;
+
+    // Ограничения по экрану
+    const maxX = window.innerWidth - win.offsetWidth;
+    const maxY = window.innerHeight - win.offsetHeight;
+
+    if (newX < 0) newX = 0;
+    if (newY < 0) newY = 0;
+    if (newX > maxX) newX = maxX;
+    if (newY > maxY) newY = maxY;
+
+    win.style.left = newX + 'px';
+    win.style.top = newY + 'px';
+  };
+
+  const stopDrag = () => {
+    isDragging = false;
+  };
+
+  handle.addEventListener('mousedown', e => startDrag(e.pageX, e.pageY));
+  handle.addEventListener('touchstart', e => startDrag(e.touches[0].pageX, e.touches[0].pageY));
+  document.addEventListener('mousemove', e => doDrag(e.pageX, e.pageY));
+  document.addEventListener('touchmove', e => doDrag(e.touches[0].pageX, e.touches[0].pageY));
+  document.addEventListener('mouseup', stopDrag);
+  document.addEventListener('touchend', stopDrag);
+}
+
+
+function enableDrag2(win, handle) {
+        
+        
+        
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+  const startDrag = (x, y) => {
+    isDragging = true;
+    offsetX = x - win.offsetLeft;
+    offsetY = y - win.offsetTop;
+  };
+  const doDrag = (x, y) => {
+    if (!isDragging) return;
+    win.style.left = (x - offsetX) + 'px';
+    win.style.top = (y - offsetY) + 'px';
+  const snapped = snapToGrid(x, y, 80); // 80 - размер ячейки сетки
+  win.style.left = snapped.x + 'px';
+  win.style.top = snapped.y + 'px';
+
+    if (x < 70) {
+      if (y < 70) {
+        win.remove();
+      }
+    }
+  };
+ function stopDrag() {
+  isDragging = false;
+  const snapped = snapToGrid(win.offsetLeft, win.offsetTop, 80);
+  win.style.left = snapped.x + 'px';
+  win.style.top = snapped.y + 'px';
+}
+
+
+
+  handle.addEventListener('mousedown', e => startDrag(e.pageX, e.pageY));
+  handle.addEventListener('touchstart', e => startDrag(e.touches[0].pageX, e.touches[0].pageY));
+  document.addEventListener('mousemove', e => doDrag(e.pageX, e.pageY));
+  document.addEventListener('touchmove', e => doDrag(e.touches[0].pageX, e.touches[0].pageY));
+  document.addEventListener('mouseup', stopDrag);
+  document.addEventListener('touchend', stopDrag);
+}
+
+function CreateWindow(title, content, dx, dy, x, y) {
+      const win = document.createElement('div');
+      win.className = 'window2';
+      if (x === "") {
+      win.style.left = Math.random() * 80 + '%';
+      } else {
+          win.style.left = x;
+      }
+      if (y === "") {
+      win.style.top = Math.random() * 50 + '%';
+      } else {
+          win.style.top = y;
+      }
+      win.style.zIndex = ++highestZ;
+      
+      win.style.width = dx;
+      win.style.height = dy;
+// if (bar === "") {
+      const header = document.createElement('div');
+      header.className = 'window-header';
+      header.textContent = title;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'close-btn';
+      closeBtn.textContent = '×';
+      closeBtn.onclick = () => win.remove();
+      
+      win.addEventListener("mousedown", () => {
+        document.querySelectorAll('.window').forEach(w => w.classList.remove('active-window'));
+        currentZ++;
+        win.style.zIndex = currentZ;
+        win.classList.add('active-window');
+    });
+      
+
+      header.appendChild(closeBtn);
+      win.appendChild(header);
+// }
+
+      const body = document.createElement('div');
+      body.className = 'window-body';
+      body.appendChild(content);
+      win.appendChild(body);
+
+      desktop.appendChild(win);
+      
+        
+      enableDrag(win, header);
+return win;
+    }
+    
+    function Creatediv(title, content, dx, dy, x, y) {
+      const win = document.createElement('div');
+      win.className = 'window2';
+      if (x === "") {
+      win.style.left = Math.random() * 80 + '%';
+      } else {
+          win.style.left = x;
+      }
+      if (y === "") {
+      win.style.top = Math.random() * 50 + '%';
+      } else {
+          win.style.top = y;
+      }
+      win.style.zIndex = ++highestZ;
+      
+      win.style.width = dx;
+      win.style.height = dy;
+
+      const body = document.createElement('div');
+      body.className = 'window-body';
+      body.appendChild(content);
+      win.appendChild(body);
+
+      desktop.appendChild(win);
+    }
+    
+let currentZ = 50; // начальный уровень
+
+function winind(el) {
+    currentZ = currentZ + 10;
+    el.style.zIndex = currentZ;
+}
+WinMenu.style.display = 'none';
+    let winmenuI = 0;
+    function WinMenu1() {
+        if (winmenuI < 1) {
+            WinMenu.style.display = 'block';
+            winmenuI = 2;
+        } else {
+            WinMenu.style.display = 'none';
+            winmenuI = 0;
+        }
+        
+        
+    }
+    
+    function options() {
+      const container = document.createElement('div');
+      container.style.width = '100%';
+      container.style.height = '100%';
+      container.style.background = 'white';
+      const but1 = document.createElement('button');
+      but1.style.background = 'orange';
+      but1.style.color = 'green';
+      but1.style.scale = '0.9';
+      but1.style.width = '100%';
+      but1.style.height = '6%';
+      but1.style.cursor = 'pointer';
+      but1.textContent = 'ResetExplorer';
+      but1.onclick = () => {
+        if(confirm('Удалить всё?')){
+          if(confirm('перезагрузить?')){
+          localStorage.removeItem('vfs_');
+          location.reload();
+        }
+        }
+      };
+      const but2 = document.createElement('button');
+      but2.style.background = 'orange';
+      but2.style.color = 'green';
+      but2.style.scale = '0.9';
+      but2.style.width = '100%';
+      but2.style.height = '6%';
+      but2.style.cursor = 'pointer';
+      but2.textContent = 'FileMeneger';
+      but2.onclick = () => {
+        openAllFilesViewer();
+      }
+      container.appendChild(but1);
+      container.appendChild(but2);
+      CreateWindow('Настройки', container, '800px', '480px', '', '');
+    }
+
+    function appStore() {
+      const but = document.createElement('button');
+      but.style.background = 'green';
+      but.style.color = 'black';
+      but.style.scale = '0.9';
+      but.style.width = '100%';
+      but.style.height = '6%';
+      but.style.cursor = 'pointer';
+      but.textContent = 'store';
+      but.onclick = () => {
+        window.open('https://example.com', '');
+
+      }
+
+      const container = document.createElement('div');
+      container.style.width = '100%';
+      container.style.height = '100%';
+      container.style.background = 'white';
+      const but1 = document.createElement('button');
+      but1.style.background = 'green';
+      but1.style.color = 'black';
+      but1.style.scale = '0.9';
+      but1.style.width = '100%';
+      but1.style.height = '6%';
+      but1.style.cursor = 'pointer';
+      but1.textContent = '====================================';
+      but1.onclick = () => {
+        alert('test');
+      }
+        
+        const but2 = document.createElement('button');
+      but2.style.background = 'green';
+      but2.style.color = 'black';
+      but2.style.scale = '0.9';
+      but2.style.width = '100%';
+      but2.style.height = '6%';
+      but2.style.cursor = 'pointer';
+      but2.textContent = 'hello';
+      but2.onclick = () => {
+        if(confirm('Download?')){
+          
+        }
+      }
+      container.appendChild(but);
+      container.appendChild(but1);
+      container.appendChild(but2);
+      CreateWindow('store', container, '400px', '480px', '', '');
+  }
+
+function updateClock() {
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const date = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}`;
+  document.getElementById('clock').innerHTML = time + '<br>' + date;
+}
+setInterval(updateClock, 1000);
+
+function openCalculator() {
+  const calcContainer = document.createElement('div');
+  const display = document.createElement('input');
+  display.type = 'text';
+  display.style.width = '100%';
+  display.style.height = '40px';
+  display.style.fontSize = '20px';
+  calcContainer.appendChild(display);
+
+  const buttons = ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','=','+'];
+  buttons.forEach(txt => {
+    const btn = document.createElement('button');
+    btn.textContent = txt;
+    btn.style.margin = '2px 3.7px';
+    btn.style.width = '22%';
+    btn.style.height = '47px';
+    btn.onclick = () => {
+      if (txt === '=') {
+        try { display.value = eval(display.value); } catch { display.value = 'Ошибка'; }
+      } else {
+        display.value += txt;
+      }
+    };
+    calcContainer.appendChild(btn);
+  });
+  CreateWindow("Калькулятор", calcContainer, "300px", "300px", "", "");
+}
+
+function openClicker() {
+  let count = 0;
+  const container = document.createElement('div');
+  const counter = document.createElement('div');
+  counter.textContent = 'Кликов: 0';
+  counter.style.fontSize = '24px';
+  counter.style.margin = '10px';
+  counter.style.color = '#ffffff';
+  counter.style.background = 'blue';
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Клик!';
+  btn.className = 'action';
+  btn.onclick = () => {
+    count++;
+    counter.textContent = 'Кликов: ' + count;
+  };
+
+  container.appendChild(counter);
+  container.appendChild(btn);
+  CreateWindow("Кликер", container, "300px", "200px", "", "");
+}
+
+
+
+
+
+function buildMenu(container, items) {
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.classList.add('menu-item');
+      div.textContent = item.label;
+
+      if (item.type === "button") {
+        div.onclick = e => {
+          e.stopPropagation();
+          item.action?.();
+          hideContextMenu();
+        };
+      } else if (item.type === "section") {
+        div.classList.add('has-submenu');
+        const submenu = document.createElement('div');
+        submenu.classList.add('submenu');
+        buildMenu(submenu, item.items);
+        div.appendChild(submenu);
+      }
+
+      container.appendChild(div);
+    });
+  }
+
+function openEndlessRunner() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 400;
+  canvas.height = 200;
+  canvas.style.background = "#222";
+
+  const ctx = canvas.getContext("2d");
+
+  const player = {
+    x: 50, y: 150, width: 20, height: 20,
+    dy: 0, grounded: true
+  };
+
+  let obstacles = [];
+  let speed = 2;
+  const gravity = 0.5;
+  let spawnTimer = 0;
+
+  let score = 0;
+
+  function spawnObstacle() {
+    const height = 20;
+    obstacles.push({
+      x: canvas.width,
+      y: 180 - height,
+      width: 15,
+      height: height
+    });
+  }
+
+  function resetGame() {
+    obstacles = [];
+    player.x = 50;
+    player.y = 150;
+    player.dy = 0;
+    score = 0;
+  }
+
+  function update() {
+    if (keys[" "] || keys["ArrowUp"]) {
+      if (player.grounded) {
+        player.dy = -8;
+        player.grounded = false;
+      }
+    }
+
+    player.dy += gravity;
+    player.y += player.dy;
+
+    if (player.y + player.height > 180) {
+      player.y = 180 - player.height;
+      player.dy = 0;
+      player.grounded = true;
+    }
+
+    spawnTimer++;
+    if (spawnTimer > 80) {
+      spawnObstacle();
+      spawnTimer = 0;
+    }
+
+    obstacles.forEach(o => o.x -= speed);
+    obstacles = obstacles.filter(o => o.x + o.width > 0);
+
+    for (let o of obstacles) {
+      if (
+        player.x < o.x + o.width &&
+        player.x + player.width > o.x &&
+        player.y < o.y + o.height &&
+        player.y + player.height > o.y
+      ) {
+        resetGame(); // без alert
+        return;
+      }
+    }
+
+    score++;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#444";
+    ctx.fillRect(0, 180, canvas.width, 20);
+
+    ctx.fillStyle = "#0f0";
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    ctx.fillStyle = "#f00";
+    for (let o of obstacles) {
+      ctx.fillRect(o.x, o.y, o.width, o.height);
+    }
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "16px sans-serif";
+    ctx.fillText("Очки: " + score, 10, 20);
+  }
+
+  const keys = {};
+  window.addEventListener("keydown", e => keys[e.key] = true);
+  window.addEventListener("keyup", e => keys[e.key] = false);
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+
+  CreateWindow("🏃 Бесконечный Бег", canvas, "420px", "240px", "", "");
+}
+
+
+  function showContextMenu(x, y) {
+    contextMenu.innerHTML = '';
+    buildMenu(contextMenu, DataMenu);
+
+    const menuWidth = 200;
+    const menuHeight = contextMenu.offsetHeight || 200;
+    const winWidth = window.innerWidth;
+    const winHeight = window.innerHeight;
+
+    if (x + menuWidth > winWidth) {
+      x = winWidth - menuWidth - 10;
+    }
+    if (y + menuHeight > winHeight) {
+      y = winHeight - menuHeight - 10;
+    }
+
+    contextMenu.style.left = x + 'px';
+    contextMenu.style.top = y + 'px';
+    contextMenu.style.display = 'block';
+  }
+
+  function hideContextMenu() {
+    contextMenu.style.display = 'none';
+  }
+
+  document.addEventListener('click', hideContextMenu);
+
+  document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    showContextMenu(e.pageX, e.pageY);
+  });
+
+
+const gameBtn = document.createElement("button");
+gameBtn.textContent = "🏃";
+gameBtn.onclick = openEndlessRunner;
+document.getElementById("taskbar").appendChild(gameBtn);
+
+function createFile(path, fileName, content = '') {
+  const folder = getFolder(path);
+  if (!folder || folder.type !== 'folder') return false;
+  if (folder.children[fileName]) return false; // уже существует
+  const ext = fileName.split('.').pop();
+  folder.children[fileName] = {
+    name: fileName,
+    type: 'file',
+    ext,
+    content
+  };
+  saveFS();
+  return true;
+}
+
+function createFolder(path, folderName) {
+  const folder = getFolder(path);
+  if (!folder || folder.type !== 'folder') return false;
+  if (folder.children[folderName]) return false; // уже существует
+  folder.children[folderName] = {
+    name: folderName,
+    type: 'folder',
+    children: {}
+  };
+  saveFS();
+  return true;
+}
+
+function deleteItem(path, name) {
+  const folder = getFolder(path);
+  if (!folder || folder.type !== 'folder') return false;
+  if (!folder.children[name]) return false;
+  delete folder.children[name];
+  saveFS();
+  return true;
+}
+
+function readFile(path, fileName) {
+  const folder = getFolder(path);
+  const file = folder?.children[fileName];
+  if (!file || file.type !== 'file') return null;
+  return file.content;
+}
+
+function writeFile(path, fileName, content) {
+  const folder = getFolder(path);
+  const file = folder?.children[fileName];
+  if (!file || file.type !== 'file') return false;
+  file.content = content;
+  saveFS();
+  return true;
+}
+
+function snapToGrid(x, y, gridSize = 80) {
+  const snappedX = Math.round(x / gridSize) * gridSize;
+  const snappedY = Math.round(y / gridSize) * gridSize;
+  return { x: snappedX, y: snappedY };
+}
+
+function menu() {
+  const desktop = document.getElementById("desktop");
+  const taskbar = document.getElementById("taskbar");
+  const menu = document.getElementById("menu");
+
+  if (desktop && taskbar) {
+    const hidden = desktop.style.display === "none";
+
+    desktop.style.display = hidden ? "block" : "none";
+    taskbar.style.display = hidden ? "flex" : "none"; // если taskbar использует flex
+    menu.style.display = hidden ? "none" : "block";
+  }
+  let el = document.documentElement;
+  if (el.requestFullscreen) {
+    el.requestFullscreen();
+  } else if (el.webkitRequestFullscreen) { // Safari
+    el.webkitRequestFullscreen();
+  }
+}
+
+const icons = {
+  'js': '⚙️',
+  'bat': '💻',
+  'vbs': '📜',
+  'exe': '🖥️',
+  'txt': '📄',
+  'folder': '📁'
+};
+
+function openExplorerPlus(path = []) {
+  const container = document.createElement('div');
+  container.style.display = 'flex';
+  container.style.flexDirection = 'column';
+  container.style.height = '100%';
+  container.style.background = '#f0f0f0';
+  container.style.border = '1px solid #ccc';
+  container.style.padding = '10px';
+  container.style.boxSizing = 'border-box';
+
+  let history = [path];
+  let historyIndex = 0;
+
+  function getFolder(path) {
+    let current = fs;
+    for (let p of path) {
+      if (!current.children[p]) return null;
+      current = current.children[p];
+    }
+    return current;
+  }
+
+  function goTo(newPath) {
+    if (!getFolder(newPath)) {
+      alert('Папка не найдена');
+      return;
+    }
+    history = history.slice(0, historyIndex + 1);
+    history.push(newPath);
+    historyIndex++;
+    render();
+  }
+  function goBack() {
+    if (historyIndex > 0) {
+      historyIndex--;
+      render();
+    }
+  }
+  function goForward() {
+    if (historyIndex < history.length - 1) {
+      historyIndex++;
+      render();
+    }
+  }
+
+  function createItem(type) {
+    const cwd = getFolder(history[historyIndex]);
+    const name = prompt(type === 'folder' ? 'Имя папки:' : 'Имя файла (с расширением):');
+    if (!name) return;
+    if (cwd.children[name]) {
+      alert(`${type === 'folder' ? 'Папка' : 'Файл'} с таким именем уже существует!`);
+      return;
+    }
+    if (type === 'folder') {
+      cwd.children[name] = { name, type: 'folder', children: {} };
+    } else {
+      const ext = name.includes('.') ? name.split('.').pop() : 'txt';
+      cwd.children[name] = { name, type: 'file', ext, content: '', icon: null }; // icon можно добавить сюда
+    }
+    saveFS();
+    render();
+  }
+
+  function drawIcon(item, size = 16) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    const ctx = canvas.getContext('2d');
+
+    if (item.icon) {
+      for (let y = 1; y <= size; y++) {
+        for (let x = 1; x <= size; x++) {
+          let key = `pixl${y}_${x}`;
+          ctx.fillStyle = item.icon[key] || 'transparent';
+          ctx.fillRect(x - 1, y - 1, 1, 1);
+        }
+      }
+    } else {
+      // fallback на эмодзи
+      ctx.font = "16px sans-serif";
+      ctx.fillText(icons[item.type === 'folder' ? 'folder' : item.ext || 'txt'] || '❓', 0, 14);
+    }
+    return canvas;
+  }
+
+  function render() {
+    container.innerHTML = '';
+
+    const cwd = getFolder(history[historyIndex]);
+    if (!cwd) return alert('Папка не найдена');
+
+    // Навигационная панель
+    const nav = document.createElement('div');
+    nav.style.marginBottom = '10px';
+    nav.style.display = 'flex';
+    nav.style.alignItems = 'center';
+    nav.style.gap = '8px';
+
+    const backBtn = document.createElement('button');
+    backBtn.textContent = '← Назад';
+    backBtn.disabled = historyIndex === 0;
+    backBtn.onclick = goBack;
+
+    const forwardBtn = document.createElement('button');
+    forwardBtn.textContent = 'Вперёд →';
+    forwardBtn.disabled = historyIndex === history.length - 1;
+    forwardBtn.onclick = goForward;
+
+    const upBtn = document.createElement('button');
+    upBtn.textContent = '↑ Вверх';
+    upBtn.disabled = history[historyIndex].length === 0;
+    upBtn.onclick = () => goTo(history[historyIndex].slice(0, -1));
+
+    const pathDisplay = document.createElement('div');
+    pathDisplay.style.flexGrow = '1';
+    pathDisplay.style.fontWeight = 'bold';
+    pathDisplay.style.userSelect = 'text';
+    pathDisplay.textContent = '/' + history[historyIndex].join('/');
+
+    const createFileBtn = document.createElement('button');
+    createFileBtn.textContent = 'Создать файл';
+    createFileBtn.onclick = () => createItem('file');
+
+    const createFolderBtn = document.createElement('button');
+    createFolderBtn.textContent = 'Создать папку';
+    createFolderBtn.onclick = () => createItem('folder');
+
+    nav.appendChild(backBtn);
+    nav.appendChild(forwardBtn);
+    nav.appendChild(upBtn);
+    nav.appendChild(pathDisplay);
+    nav.appendChild(createFileBtn);
+    nav.appendChild(createFolderBtn);
+
+    container.appendChild(nav);
+
+    // Список файлов и папок
+    const list = document.createElement('div');
+    list.style.flexGrow = '1';
+    list.style.overflowY = 'auto';
+    list.style.border = '1px solid #ccc';
+    list.style.background = 'white';
+    list.style.padding = '5px';
+    list.style.boxSizing = 'border-box';
+
+    // drag & drop
+    list.ondragover = (e) => e.preventDefault();
+    list.ondrop = (e) => {
+      e.preventDefault();
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const { path, name } = data;
+        const srcFolder = getFolder(path);
+        const srcItem = srcFolder.children[name];
+        const dstFolder = getFolder(history[historyIndex]);
+        if (!dstFolder || !srcItem) return;
+        if (dstFolder.children[name]) { alert('Файл с таким именем уже существует!'); return; }
+        dstFolder.children[name] = JSON.parse(JSON.stringify(srcItem));
+        saveFS();
+        render();
+      } catch (err) { console.warn('Ошибка при переносе файла:', err); }
+    };
+
+    if (history[historyIndex].length > 0) {
+      const upEl = document.createElement('div');
+      upEl.textContent = '..';
+      upEl.style.cursor = 'pointer';
+      upEl.style.padding = '5px';
+      upEl.style.color = '#0078d7';
+      upEl.onclick = () => goTo(history[historyIndex].slice(0, -1));
+      list.appendChild(upEl);
+    }
+
+    Object.values(cwd.children)
+      .sort((a, b) => {
+        if (a.type === b.type) return a.name.localeCompare(b.name);
+        return a.type === 'folder' ? -1 : 1;
+      })
+      .forEach(item => {
+        const el = document.createElement('div');
+        el.style.padding = '5px';
+        el.style.cursor = 'pointer';
+        el.style.userSelect = 'none';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.gap = '5px';
+        el.style.justifyContent = 'space-between';
+
+        const icon = drawIcon(item);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = item.name;
+        nameSpan.style.flexGrow = '1';
+
+        el.appendChild(icon);
+        el.appendChild(nameSpan);
+
+        el.draggable = true;
+        el.ondragstart = (e) => {
+          e.dataTransfer.setData('text/plain', JSON.stringify({ path: history[historyIndex], name: item.name }));
+        };
+
+        el.onmouseenter = () => { el.style.backgroundColor = '#e0e0e0'; };
+        el.onmouseleave = () => { el.style.backgroundColor = 'transparent'; };
+
+        el.onclick = () => {
+          if (item.type === 'folder') {
+            goTo([...history[historyIndex], item.name]);
+          } else {
+            openFile(item, cwd);
+          }
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '✖';
+        delBtn.title = 'Удалить';
+        delBtn.style.marginLeft = '8px';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`Удалить "${item.name}"?`)) {
+            deleteItem(history[historyIndex], item.name);
+            render();
+          }
+        };
+
+        el.appendChild(delBtn);
+        list.appendChild(el);
+      });
+
+    container.appendChild(list);
+  }
+
+  render();
+  makeWindow('Проводник', container);
+}
+
+const con = document.createElement('div');
+
+
+// CreateWindowPlus('📁 text', con, '200px', '150px', '', '', 'blue', '', 'true', 'menu();', '0px', '📁');
+// CreateWindowPlus('📁 text', con, '200px', '150px', '', '', 'blue', '', 'true', '', '0px', '📁');
+// CreateWindowPlus('📁 text', con, '200px', '150px', '', '', 'blue', '', 'true', '', '0px', '📁');
+// CreateWindowPlus('📁 text', con, '200px', '150px', '', '', 'blue', '', 'true', '', '0px', '📁');
+function CreateWindowPlus(title, content, dx, dy, x, y, colorH, height, del, codeDel, borderR, nameHed) {
+  const win = document.createElement('div');
+  win.className = 'window2';
+
+  // Позиция
+  win.style.left = x === "" ? Math.random() * 80 + '%' : x;
+  win.style.top = y === "" ? Math.random() * 50 + '%' : y;
+  win.style.width = dx;
+  win.style.height = dy;
+  win.style.zIndex = ++highestZ;
+  win.style.borderRadius = borderR;
+
+  // Заголовок
+  const header = document.createElement('div');
+  header.className = 'window-header';
+  header.textContent = title;
+  if (colorH !== '') header.style.background = colorH;
+  if (height !== '') header.style.height = height;
+
+  // Тело окна
+  const body = document.createElement('div');
+  body.className = 'window-body';
+  body.appendChild(content);
+  win.appendChild(header);
+  win.appendChild(body);
+
+  // Панель задач
+  const taskbar = document.getElementById("taskbar");
+  const taskIcon = document.createElement("button");
+  taskIcon.className = "taskbar-win";
+  taskIcon.style.background = "green";
+  taskIcon.textContent = nameHed;
+  taskbar.appendChild(taskIcon);
+
+  let minimized = false;
+
+  // Клик по иконке панели задач
+  taskIcon.onclick = () => {
+    if (minimized) {
+      win.style.display = 'block';
+      minimized = false;
+      taskIcon.classList.add('active');
+      win.classList.add('active-window');
+      win.style.zIndex = ++highestZ;
+    } else {
+      win.style.display = 'none';
+      minimized = true;
+      taskIcon.classList.remove('active');
+      win.classList.remove('active-window');
+    }
+  };
+
+  // Клик по окну — активировать
+  win.addEventListener("mousedown", () => {
+    document.querySelectorAll('.window2').forEach(w => w.classList.remove('active-window'));
+    document.querySelectorAll('.taskbar-win').forEach(t => t.classList.remove('active'));
+    win.classList.add('active-window');
+    taskIcon.classList.add('active');
+    win.style.zIndex = ++highestZ;
+    bringToFront(win);
+  });
+
+  // Иконка сразу активна
+  taskIcon.classList.add("active");
+  win.classList.add("active-window");
+
+  // Контейнер для кнопок
+const btnGroup = document.createElement('div');
+btnGroup.style.display = 'flex';
+btnGroup.style.marginLeft = 'auto';
+
+// Кнопка свернуть
+const minimizeBtn = document.createElement('button');
+minimizeBtn.className = 'window-btn';
+minimizeBtn.textContent = '_';
+minimizeBtn.onclick = () => {
+  win.style.display = 'none';
+  minimized = true;
+  taskIcon.classList.remove('active');
+  win.classList.remove('active-window');
+};
+
+// Кнопка закрыть
+const closeBtn = document.createElement('button');
+closeBtn.className = 'close-btn';
+closeBtn.textContent = '×';
+closeBtn.onclick = () => {
+  eval(codeDel);
+  win.remove();
+  taskIcon.remove();
+};
+
+// Добавляем кнопки в контейнер
+btnGroup.appendChild(minimizeBtn);
+if (del === 'true') btnGroup.appendChild(closeBtn);
+
+// Добавляем контейнер в заголовок
+header.appendChild(btnGroup);
+
+
+
+  // Добавление в DOM
+  desktop.appendChild(win);
+
+  // Перетаскивание
+  enableDrag(win, header);
+
+  return win;
+}
+
+
+function bringToFront(win) {
+  document.querySelectorAll('.window2').forEach(w => w.classList.remove('active-window'));
+  document.querySelectorAll('.taskbar-win').forEach(t => t.classList.remove('active'));
+  win.classList.add('active-window');
+  win.style.zIndex = ++currentZ;
+}
+
+function openAllFilesViewer() {
+  const container = document.createElement('div');
+  container.style.width = '100%';
+  container.style.height = '100%';
+  container.style.display = 'flex';
+  container.style.flexDirection = 'row';
+  container.style.gap = '10px';
+
+  const fileList = document.createElement('div');
+  fileList.style.flex = '1';
+  fileList.style.overflowY = 'auto';
+  fileList.style.background = '#eee';
+  fileList.style.padding = '5px';
+
+  const viewer = document.createElement('textarea');
+  viewer.style.flex = '2';
+  viewer.style.width = '100%';
+  viewer.style.height = '100%';
+  viewer.style.resize = 'none';
+  viewer.style.fontFamily = 'monospace';
+  viewer.style.whiteSpace = 'pre';
+  viewer.readOnly = true;
+
+  container.appendChild(fileList);
+  container.appendChild(viewer);
+
+  // Рекурсивно пройтись по всей FS
+  function collectFiles(folder, path = []) {
+    for (let name in folder.children) {
+      const item = folder.children[name];
+      const fullPath = [...path, name];
+      if (item.type === 'file') {
+        const fileBtn = document.createElement('div');
+        fileBtn.textContent = '/' + fullPath.join('/');
+        fileBtn.style.cursor = 'pointer';
+        fileBtn.style.padding = '5px';
+        fileBtn.style.borderBottom = '1px solid #ccc';
+        fileBtn.onmouseenter = () => fileBtn.style.background = '#ddd';
+        fileBtn.onmouseleave = () => fileBtn.style.background = '';
+        fileBtn.onclick = () => {
+          viewer.value = item.content || '';
+        };
+        fileList.appendChild(fileBtn);
+      } else if (item.type === 'folder') {
+        collectFiles(item, [...path, name]);
+      }
+    }
+  }
+
+  collectFiles(fs);
+
+  CreateWindowPlus("📂 Все файлы", container, "800px", "500px", "", "", "blue", "", "true", "", "10px", "📂+");
+}
+
+function run(Code) {
+  setTimeout(function() {
+    eval(Code);
+    run(Code);
+  }, 10);
+}
+var c = "function t() { alert('t') }";
+//eval(c)
+//eval("t();")
+
+function run(code) {
+  let data;
+
+  if (typeof code === "string") {
+    try {
+      data = JSON.parse(code);
+    } catch (e) {
+      console.error("Invalid JSON:", e);
+      return;
+    }
+  } else {
+    data = code;
+  }
+
+  if (!Array.isArray(data.cmd)) {
+    console.error("Missing 'cmd' array");
+    return;
+  }
+
+  for (const command of data.cmd) {
+    if (command.type === "msg") {
+      const content = document.createElement('div');
+      const text = document.createElement('h1');
+      const but = document.createElement('button');
+      text.textContent = command.text;
+      but.textContent = 'Close';
+      content.style.background = 'white';
+      content.appendChild(text);
+      content.appendChild(but);
+      let x = "100px";
+let y = "100px";
+let dx = "400px";
+let dy = "300px";
+let borderR = "8px";
+let title = command.title;
+let colorH = "#3498db";
+let height = "30px";
+let nameHed = "Окно";
+
+const win = document.createElement('div');
+win.className = 'window2';
+
+win.style.left = x === "" ? Math.random() * 80 + '%' : x;
+win.style.top = y === "" ? Math.random() * 50 + '%' : y;
+win.style.width = dx;
+win.style.height = dy;
+win.style.zIndex = ++highestZ;
+win.style.borderRadius = borderR;
+
+const header = document.createElement('div');
+header.className = 'window-header';
+header.textContent = title;
+if (colorH !== '') header.style.background = colorH;
+if (height !== '') header.style.height = height;
+
+const body = document.createElement('div');
+body.className = 'window-body';
+body.appendChild(content);
+win.appendChild(header);
+win.appendChild(body);
+
+const taskbar = document.getElementById("taskbar");
+const taskIcon = document.createElement("button");
+taskIcon.className = "taskbar-win";
+taskIcon.textContent = nameHed;
+taskbar.appendChild(taskIcon);
+
+let minimized = false;
+
+taskIcon.onclick = () => {
+  if (minimized) {
+    win.style.display = 'block';
+    minimized = false;
+    taskIcon.classList.add('active');
+    win.classList.add('active-window');
+    win.style.zIndex = ++highestZ;
+  } else {
+    win.style.display = 'none';
+    minimized = true;
+    taskIcon.classList.remove('active');
+    win.classList.remove('active-window');
+  }
+};
+
+win.addEventListener("mousedown", () => {
+  document.querySelectorAll('.window2').forEach(w => w.classList.remove('active-window'));
+  document.querySelectorAll('.taskbar-win').forEach(t => t.classList.remove('active'));
+  win.classList.add('active-window');
+  taskIcon.classList.add('active');
+  // win.style.zIndex = ++highestZ;
+  bringToFront(win);
+});
+
+taskIcon.classList.add("active");
+win.classList.add("active-window");
+
+const btnGroup = document.createElement('div');
+btnGroup.style.display = 'flex';
+btnGroup.style.marginLeft = 'auto';
+
+const minimizeBtn = document.createElement('button');
+minimizeBtn.className = 'window-btn';
+minimizeBtn.textContent = '_';
+minimizeBtn.onclick = () => {
+  win.style.display = 'none';
+  minimized = true;
+  taskIcon.classList.remove('active');
+  win.classList.remove('active-window');
+};
+
+const closeBtn = document.createElement('button');
+closeBtn.className = 'close-btn';
+closeBtn.textContent = '×';
+closeBtn.onclick = () => {
+  win.remove();
+  taskIcon.remove();
+};
+
+btnGroup.appendChild(minimizeBtn);
+btnGroup.appendChild(closeBtn);
+header.appendChild(btnGroup);
+
+document.getElementById("desktop").appendChild(win);
+enableDrag(win, header);
+
+    }
+  }
+}
+
+updateClock();
+  </script>
+</body>
+</html>
